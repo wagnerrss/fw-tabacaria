@@ -83,12 +83,12 @@ public class TabacariaController {
 //    User (Usuário)
 //*****************************************
 
-    @GetMapping("/user")
+    @GetMapping("/usuario")
     public ResponseEntity<Iterable<Usuario>> getUser() {
         return ResponseEntity.ok(usuarioService.getUsers());
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/usuario/{id}")
     public ResponseEntity getUserById(@PathVariable("id") Integer id) {
         Optional<Usuario> product = usuarioService.getById(id);
 
@@ -97,7 +97,7 @@ public class TabacariaController {
                 new ResponseEntity<>(mapErro("GET", ""), HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/user")
+    @PostMapping("/usuario")
     public ResponseEntity postUser(@RequestBody Usuario usuario) {
         try {
             Usuario p = usuarioService.insert(usuario);
@@ -109,7 +109,7 @@ public class TabacariaController {
         }
     }
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/usuario/{id}")
     public ResponseEntity putUser(@PathVariable("id") Integer id, @RequestBody Usuario usuario) {
         try {
             usuario.setId(id);
@@ -123,7 +123,7 @@ public class TabacariaController {
         }
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/usuario/{id}")
     public ResponseEntity deleteUser(@PathVariable("id") Integer id) {
         boolean ok = usuarioService.delete(id);
 
