@@ -1,7 +1,7 @@
 package com.fw.tabacaria.api;
 
-import com.fw.tabacaria.domain.User;
-import com.fw.tabacaria.service.UserService;
+import com.fw.tabacaria.domain.Usuario;
+import com.fw.tabacaria.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/petshop")
+@RequestMapping("/api/v1/tabacaria")
 public class TabacariaController {
 
     @Autowired
-    private UserService userService;
+    private UsuarioService usuarioService;
 
     @GetMapping
     public String get() {
@@ -84,13 +84,13 @@ public class TabacariaController {
 //*****************************************
 
     @GetMapping("/user")
-    public ResponseEntity<Iterable<User>> getUser() {
-        return ResponseEntity.ok(userService.getUsers());
+    public ResponseEntity<Iterable<Usuario>> getUser() {
+        return ResponseEntity.ok(usuarioService.getUsers());
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity getUserById(@PathVariable("id") Integer id) {
-        Optional<User> product = userService.getById(id);
+        Optional<Usuario> product = usuarioService.getById(id);
 
         return product.isPresent() ?
                 ResponseEntity.ok(product.get()) :
@@ -98,9 +98,9 @@ public class TabacariaController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity postUser(@RequestBody User user) {
+    public ResponseEntity postUser(@RequestBody Usuario usuario) {
         try {
-            User p = userService.insert(user);
+            Usuario p = usuarioService.insert(usuario);
 
             URI location = getUri(p.getId());
             return ResponseEntity.created(location).build();
@@ -110,13 +110,13 @@ public class TabacariaController {
     }
 
     @PutMapping("/user/{id}")
-    public ResponseEntity putUser(@PathVariable("id") Integer id, @RequestBody User user) {
+    public ResponseEntity putUser(@PathVariable("id") Integer id, @RequestBody Usuario usuario) {
         try {
-            user.setId(id);
-            User p = userService.update(id, user);
+            usuario.setId(id);
+            Usuario u = usuarioService.update(id, usuario);
 
-            return p != null ?
-                    ResponseEntity.ok(p) :
+            return u != null ?
+                    ResponseEntity.ok(u) :
                     new ResponseEntity<>(mapErro("PUT", ""), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
             return new ResponseEntity<>(mapErro("PUT", ex.getMessage()), HttpStatus.BAD_REQUEST);
@@ -125,7 +125,7 @@ public class TabacariaController {
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity deleteUser(@PathVariable("id") Integer id) {
-        boolean ok = userService.delete(id);
+        boolean ok = usuarioService.delete(id);
 
         return ok ?
                 ResponseEntity.ok().build() :
@@ -138,7 +138,7 @@ public class TabacariaController {
     @GetMapping("/login")
     public ResponseEntity getLogin(@RequestBody Map login) {
         try {
-            User u = userService.findUser(login);
+            Usuario u = usuarioService.findUser(login);
 
             if ((u == null) || (u.getId() <= 0)) {
 
