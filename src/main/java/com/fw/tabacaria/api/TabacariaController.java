@@ -1,6 +1,10 @@
 package com.fw.tabacaria.api;
 
+import com.fw.tabacaria.domain.Categoria;
+import com.fw.tabacaria.domain.Endereco;
 import com.fw.tabacaria.domain.Usuario;
+import com.fw.tabacaria.service.CategoriaService;
+import com.fw.tabacaria.service.EnderecoService;
 import com.fw.tabacaria.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +23,12 @@ public class TabacariaController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private CategoriaService categoriaService;
+
+    @Autowired
+    private EnderecoService enderecoService;
 
     @GetMapping
     public String get() {
@@ -80,7 +90,7 @@ public class TabacariaController {
     }
 
 //*****************************************
-//    User (Usuário)
+//    Usuário
 //*****************************************
 
     @GetMapping("/usuario")
@@ -132,7 +142,7 @@ public class TabacariaController {
                 new ResponseEntity<>(mapErro("DELETE", ""), HttpStatus.BAD_REQUEST);
     }
 
-    //*****************************************
+//*****************************************
 //    Login
 //*****************************************
     @GetMapping("/login")
@@ -151,5 +161,110 @@ public class TabacariaController {
         }
     }
 
+//*****************************************
+//    Categoria
+//*****************************************
+
+    @GetMapping("/categoria")
+    public ResponseEntity<Iterable<Categoria>> getCategoria() {
+        return ResponseEntity.ok(categoriaService.getCategorias());
+    }
+
+    @GetMapping("/categoria/{id}")
+    public ResponseEntity getCategoriaById(@PathVariable("id") Integer id) {
+        Optional<Categoria> product = categoriaService.getById(id);
+
+        return product.isPresent() ?
+                ResponseEntity.ok(product.get()) :
+                new ResponseEntity<>(mapErro("GET", ""), HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/categoria")
+    public ResponseEntity postCategoria(@RequestBody Categoria categoria) {
+        try {
+            Categoria p = categoriaService.insert(categoria);
+
+            URI location = getUri(p.getId());
+            return ResponseEntity.created(location).build();
+        } catch (Exception ex) {
+            return new ResponseEntity<>(mapErro("POST", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/categoria/{id}")
+    public ResponseEntity putCategoria(@PathVariable("id") Integer id, @RequestBody Categoria categoria) {
+        try {
+            categoria.setId(id);
+            Categoria u = categoriaService.update(id, categoria);
+
+            return u != null ?
+                    ResponseEntity.ok(u) :
+                    new ResponseEntity<>(mapErro("PUT", ""), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(mapErro("PUT", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/categoria/{id}")
+    public ResponseEntity deleteCategoria(@PathVariable("id") Integer id) {
+        boolean ok = categoriaService.delete(id);
+
+        return ok ?
+                ResponseEntity.ok().build() :
+                new ResponseEntity<>(mapErro("DELETE", ""), HttpStatus.BAD_REQUEST);
+    }
+
+//*****************************************
+//    Endereço
+//*****************************************
+
+    @GetMapping("/enderecoUsuario/{idUsuario}")
+    public ResponseEntity<Iterable<Endereco>> getEnderecoUsuario(@PathVariable("idUsuario") Integer idUsuario) {
+        return ResponseEntity.ok(enderecoService.getByIdUsuario(idUsuario));
+    }
+
+    @GetMapping("/endereco/{id}")
+    public ResponseEntity getEnderecoById(@PathVariable("id") Integer id) {
+        Optional<Endereco> product = enderecoService.getById(id);
+
+        return product.isPresent() ?
+                ResponseEntity.ok(product.get()) :
+                new ResponseEntity<>(mapErro("GET", ""), HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/endereco")
+    public ResponseEntity postEndereco(@RequestBody Endereco endereco) {
+        try {
+            Endereco p = enderecoService.insert(endereco);
+
+            URI location = getUri(p.getId());
+            return ResponseEntity.created(location).build();
+        } catch (Exception ex) {
+            return new ResponseEntity<>(mapErro("POST", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/endereco/{id}")
+    public ResponseEntity putEndereco(@PathVariable("id") Integer id, @RequestBody Endereco endereco) {
+        try {
+            endereco.setId(id);
+            Endereco u = enderecoService.update(id, endereco);
+
+            return u != null ?
+                    ResponseEntity.ok(u) :
+                    new ResponseEntity<>(mapErro("PUT", ""), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(mapErro("PUT", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/endereco/{id}")
+    public ResponseEntity deleteEndereco(@PathVariable("id") Integer id) {
+        boolean ok = enderecoService.delete(id);
+
+        return ok ?
+                ResponseEntity.ok().build() :
+                new ResponseEntity<>(mapErro("DELETE", ""), HttpStatus.BAD_REQUEST);
+    }
 
 }
