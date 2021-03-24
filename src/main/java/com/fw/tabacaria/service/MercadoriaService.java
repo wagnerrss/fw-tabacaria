@@ -1,11 +1,14 @@
 package com.fw.tabacaria.service;
 
 import com.fw.tabacaria.domain.Mercadoria;
+import com.fw.tabacaria.domain.MercadoriaCompleta;
 import com.fw.tabacaria.repository.MercadoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,8 +16,31 @@ public class MercadoriaService {
     @Autowired
     private MercadoriaRepository mercadoriaRepository;
 
-    public Iterable<Mercadoria> getMercadorias() {
-        return mercadoriaRepository.findAll();
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private CategoriaService categoriaService;
+
+    public Iterable<MercadoriaCompleta> getMercadorias() {
+        Iterable<Mercadoria> mercadorias = mercadoriaRepository.findAll();
+        List<MercadoriaCompleta> lMc = new ArrayList<>();
+        for (Mercadoria m : mercadorias){
+            MercadoriaCompleta mc = new MercadoriaCompleta();
+            mc.setId(m.getId());
+            mc.setUsuario(usuarioService.getById(m.getIdUsuario()).get());
+            mc.setCategoria(categoriaService.getById(m.getIdCategoria()).get());
+            mc.setFoto(m.getFoto());
+            mc.setNome(m.getNome());
+            mc.setDescricao(m.getDescricao());
+            mc.setPreco(m.getPreco());
+            mc.setTipo(m.getTipo());
+            mc.setQuantidade(m.getQuantidade());
+
+            lMc.add(mc);
+        }
+
+        return lMc;
     }
 
     public Optional<Mercadoria> getById(Integer id) {
