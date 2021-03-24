@@ -20,7 +20,7 @@ public interface MercadoriaRepository extends CrudRepository<Mercadoria, Integer
     Iterable<Mercadoria> findByNomeDescricao(@Param("NOME") String nome,
                                              @Param("DESCRICAO") String descricao);
 
-    @Query(value = "SELECT FIRST 1 * FROM MERCADORIA WHERE ID_USUARIO = :ID_USUARIO AND NOME = :NOME ", nativeQuery = true)
+    @Query(value = "SELECT * FROM MERCADORIA WHERE ID_USUARIO = :ID_USUARIO AND NOME = :NOME LIMIT 1 ", nativeQuery = true)
     Optional<Mercadoria> findByIdUsuarioNome(@Param("ID_USUARIO") Integer idUsuario,
                                              @Param("NOME") String nome);
 
