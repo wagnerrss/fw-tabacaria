@@ -1,6 +1,7 @@
 package com.fw.tabacaria.api;
 
 import com.fw.tabacaria.domain.Mercadoria;
+import com.fw.tabacaria.domain.MercadoriaCompleta;
 import com.fw.tabacaria.service.MercadoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class MercadoriaController {
     private MercadoriaService mercadoriaService;
 
     @GetMapping("/mercadoria")
-    public ResponseEntity<Iterable<Mercadoria>> getMercadoria() {
+    public ResponseEntity<Iterable<MercadoriaCompleta>> getMercadoria() {
         return ResponseEntity.ok(mercadoriaService.getMercadorias());
     }
 
