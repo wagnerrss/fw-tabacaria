@@ -11,12 +11,20 @@ public class Mercadoria {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
-    private Integer idUsuario;
-    private Integer idCategoria;
-    private String foto;
+    private String foto1;
+    private String foto2;
+    private String foto3;
     private String nome;
     private String descricao;
-    private Float preco;
+    private String ean;
+    private Float precoSugerido;
     private String tipo;
-    private Float quantidade;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private Categoria categoria;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    private Marca marca;
 }

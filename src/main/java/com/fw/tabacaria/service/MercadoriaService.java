@@ -1,5 +1,7 @@
 package com.fw.tabacaria.service;
 
+import com.fw.tabacaria.domain.Categoria;
+import com.fw.tabacaria.domain.Marca;
 import com.fw.tabacaria.domain.Mercadoria;
 import com.fw.tabacaria.domain.MercadoriaCompleta;
 import com.fw.tabacaria.repository.MercadoriaRepository;
@@ -17,42 +19,25 @@ public class MercadoriaService {
     private MercadoriaRepository mercadoriaRepository;
 
     @Autowired
-    private UsuarioService usuarioService;
-
-    @Autowired
     private CategoriaService categoriaService;
 
-    public Iterable<MercadoriaCompleta> getMercadorias() {
-        Iterable<Mercadoria> mercadorias = mercadoriaRepository.findAll();
-        List<MercadoriaCompleta> lMc = new ArrayList<>();
-        for (Mercadoria m : mercadorias){
-            MercadoriaCompleta mc = new MercadoriaCompleta();
-            mc.setId(m.getId());
-            mc.setUsuario(usuarioService.getById(m.getIdUsuario()).get());
-            mc.setCategoria(categoriaService.getById(m.getIdCategoria()).get());
-            mc.setFoto(m.getFoto());
-            mc.setNome(m.getNome());
-            mc.setDescricao(m.getDescricao());
-            mc.setPreco(m.getPreco());
-            mc.setTipo(m.getTipo());
-            mc.setQuantidade(m.getQuantidade());
+    @Autowired
+    private MarcaService marcaService;
 
-            lMc.add(mc);
-        }
-
-        return lMc;
+    public Iterable<Mercadoria> getMercadorias() {
+        return mercadoriaRepository.findAll();
     }
 
     public Optional<Mercadoria> getById(Integer id) {
         return mercadoriaRepository.findById(id);
     }
 
-    public Iterable<Mercadoria> getByUsuario(Integer idUsuario){
-        return mercadoriaRepository.findByIdUsuario(idUsuario);
+    public Iterable<Mercadoria> getByCategoria(Categoria categoria){
+        return mercadoriaRepository.findByCategoria(categoria);
     }
 
-    public Iterable<Mercadoria> getByCategoria(Integer idCategoria){
-        return mercadoriaRepository.findByIdCategoria(idCategoria);
+    public Iterable<Mercadoria> getByMarca(Marca marca){
+        return mercadoriaRepository.findByMarca(marca);
     }
 
     public Optional<Mercadoria> getByNome(String nome) {
@@ -63,17 +48,22 @@ public class MercadoriaService {
         return mercadoriaRepository.findByDescricao(descricao);
     }
 
+    public Optional<Mercadoria> getByEan(String ean) {
+        return mercadoriaRepository.findByEan(ean);
+    }
+
     public Iterable<Mercadoria> getByNomeDescricao(String nome, String descricao){
         return mercadoriaRepository.findByNomeDescricao(nome, descricao);
     }
 
-    public Optional<Mercadoria> getByIdUsuarioNome(Integer idUsuario, String nome) {
-        return mercadoriaRepository.findByIdUsuarioNome(idUsuario, nome);
-    }
-
     public Mercadoria insert(Mercadoria mercadoria) {
         if ((mercadoria.getId() == null) || (mercadoria.getId() <= 0)) {
-            Optional<Mercadoria> op1 = getByIdUsuarioNome(mercadoria.getIdUsuario(), mercadoria.getNome());
+            Optional<Mercadoria> op1 = getByNome(mercadoria.getNome());
+            if (op1.isPresent()){
+                throw new RuntimeException("Mercadoria já existe");
+            }
+
+            op1 = getByEan(mercadoria.getEan());
             if (op1.isPresent()){
                 throw new RuntimeException("Mercadoria já existe");
             }
@@ -90,21 +80,29 @@ public class MercadoriaService {
         Optional<Mercadoria> optional = getById(id);
 
         if (!optional.get().getNome().equals(mercadoria.getNome())) {
-            Optional<Mercadoria> optionalNome = getByIdUsuarioNome(optional.get().getIdUsuario(), mercadoria.getNome());
-            if (optionalNome.isPresent()) {
+            Optional<Mercadoria> optional1 = getByNome(mercadoria.getNome());
+            if (optional1.isPresent()) {
+                throw new RuntimeException("Não foi possível atualizar o registro, Mercadoria já existe");
+            }
+
+            optional1 = getByEan(mercadoria.getEan());
+            if (optional1.isPresent()) {
                 throw new RuntimeException("Não foi possível atualizar o registro, Mercadoria já existe");
             }
         }
 
         if (optional.isPresent()) {
             Mercadoria m = optional.get();
-            m.setIdCategoria(mercadoria.getIdCategoria());
-            m.setFoto(mercadoria.getFoto());
+            m.setCategoria(categoriaService.getById(mercadoria.getCategoria().getId()).get());
+            m.setMarca(marcaService.getById(mercadoria.getMarca().getId()).get());
+            m.setFoto1(mercadoria.getFoto1());
+            m.setFoto2(mercadoria.getFoto2());
+            m.setFoto3(mercadoria.getFoto3());
             m.setNome(mercadoria.getNome());
             m.setDescricao(mercadoria.getDescricao());
-            m.setPreco(mercadoria.getPreco());
+            m.setPrecoSugerido(mercadoria.getPrecoSugerido());
+            m.setEan(mercadoria.getEan());
             m.setTipo(mercadoria.getTipo());
-            m.setQuantidade(mercadoria.getQuantidade());
 
             mercadoriaRepository.save(m);
 

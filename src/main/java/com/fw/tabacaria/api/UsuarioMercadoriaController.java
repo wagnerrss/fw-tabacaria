@@ -1,8 +1,7 @@
 package com.fw.tabacaria.api;
 
-import com.fw.tabacaria.domain.Mercadoria;
-import com.fw.tabacaria.domain.MercadoriaCompleta;
-import com.fw.tabacaria.service.MercadoriaService;
+import com.fw.tabacaria.domain.UsuarioMercadoria;
+import com.fw.tabacaria.service.UsuarioMercadoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,32 +12,32 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/tabacaria")
-public class MercadoriaController {
+public class UsuarioMercadoriaController {
 
     @Autowired
     private TabacariaController tabacariaController;
 
     @Autowired
-    private MercadoriaService mercadoriaService;
+    private UsuarioMercadoriaService usuarioMercadoriaService;
 
-    @GetMapping("/mercadoria")
-    public ResponseEntity<Iterable<Mercadoria>> getMercadoria() {
-        return ResponseEntity.ok(mercadoriaService.getMercadorias());
+    @GetMapping("/usuariomercadoria")
+    public ResponseEntity<Iterable<UsuarioMercadoria>> getUsuarioMercadoria() {
+        return ResponseEntity.ok(usuarioMercadoriaService.getUsuarioMercadoria());
     }
 
-    @GetMapping("/mercadoria/{id}")
-    public ResponseEntity getMercadoriaById(@PathVariable("id") Integer id) {
-        Optional<Mercadoria> mercadoria = mercadoriaService.getById(id);
+    @GetMapping("/usuariomercadoria/{id}")
+    public ResponseEntity getUsuarioMercadoriaById(@PathVariable("id") Integer id) {
+        Optional<UsuarioMercadoria> mercadoria = usuarioMercadoriaService.getById(id);
 
         return mercadoria.isPresent() ?
                 ResponseEntity.ok(mercadoria.get()) :
                 new ResponseEntity<>(tabacariaController.mapErro("GET", ""), HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/mercadoria")
-    public ResponseEntity postMercadoria(@RequestBody Mercadoria mercadoria) {
+    @PostMapping("/usuariomercadoria")
+    public ResponseEntity postUsuarioMercadoria(@RequestBody UsuarioMercadoria mercadoria) {
         try {
-            Mercadoria m = mercadoriaService.insert(mercadoria);
+            UsuarioMercadoria m = usuarioMercadoriaService.insert(mercadoria);
 
             URI location = tabacariaController.getUri(m.getId());
             return ResponseEntity.created(location).build();
@@ -47,11 +46,11 @@ public class MercadoriaController {
         }
     }
 
-    @PutMapping("/mercadoria/{id}")
-    public ResponseEntity putMercadoria(@PathVariable("id") Integer id, @RequestBody Mercadoria mercadoria) {
+    @PutMapping("/usuariomercadoria/{id}")
+    public ResponseEntity putUsuarioMercadoria(@PathVariable("id") Integer id, @RequestBody UsuarioMercadoria mercadoria) {
         try {
             mercadoria.setId(id);
-            Mercadoria m = mercadoriaService.update(id, mercadoria);
+            UsuarioMercadoria m = usuarioMercadoriaService.update(id, mercadoria);
 
             return m != null ?
                     ResponseEntity.ok(m) :
@@ -61,9 +60,9 @@ public class MercadoriaController {
         }
     }
 
-    @DeleteMapping("/mercadoria/{id}")
-    public ResponseEntity deleteMercadoria(@PathVariable("id") Integer id) {
-        boolean ok = mercadoriaService.delete(id);
+    @DeleteMapping("/usuariomercadoria/{id}")
+    public ResponseEntity deleteUsuarioMercadoria(@PathVariable("id") Integer id) {
+        boolean ok = usuarioMercadoriaService.delete(id);
 
         return ok ?
                 ResponseEntity.ok().build() :
